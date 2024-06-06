@@ -14,7 +14,7 @@ echo "###########################    Empezando el preprocesamiento de los fastq 
 	       fastqc $muestra*_2.fq.gz -o fastqc/
            fastp -i $muestra*_1.fq.gz -o $muestra"_trimmed_dup_1.fq.gz" \
             -I $muestra*_2.fq.gz -O $muestra"_trimmed_dup_2.fq.gz" \
-            --detect_adapter_for_pe --thread  8 
+            --detect_adapter_for_pe --thread  20 
             #rm $muestra*_1.fq.gz $muestra*_2.fq.gz
        done
 cd ..
@@ -54,7 +54,7 @@ then
 for muestra in $(ls | grep .fq.gz | cut -d '_' -f1,2,3,4| uniq )
 do
     echo "###########################    comenzando mapping de $muestra  $(date +'%H:%M:%S')   ###########################"
-    bowtie2 -x human_index -1 $muestra*trimmed_dup_1.fq.gz -2 $muestra*trimmed_dup_2.fq.gz -S $muestra".sam" --very-sensitive -X 500 -p 7
+    bowtie2 -x human_index -1 $muestra*trimmed_dup_1.fq.gz -2 $muestra*trimmed_dup_2.fq.gz -S $muestra".sam" --very-sensitive -X 500 -p 20
     echo "###########################    terminando mapping de $muestra  $(date +'%H:%M:%S')   ###########################"
 
     echo "###########################    comenzando creación del .bam .bai de $muestra  $(date +'%H:%M:%S')   ###########################"
@@ -72,7 +72,7 @@ else
 for muestra in $(ls | grep .fq.gz | cut -d '_' -f1,2,3,4| uniq )
 do
     echo "###########################    comenzando mapping de $muestra  $(date +'%H:%M:%S')   ###########################"
-    bowtie2 -x mouse_index -1 $muestra*trimmed_dup_1.fq.gz -2 $muestra*trimmed_dup_2.fq.gz -S $muestra".sam" --very-sensitive -X 2000 -p 8
+    bowtie2 -x mouse_index -1 $muestra*trimmed_dup_1.fq.gz -2 $muestra*trimmed_dup_2.fq.gz -S $muestra".sam" --very-sensitive -X 2000 -p 20
     echo "###########################    terminando mapping de $muestra  $(date +'%H:%M:%S')   ###########################"
 
     echo "###########################    comenzando creación del .bam .bai de $muestra  $(date +'%H:%M:%S')  ###########################"
@@ -92,7 +92,7 @@ if [ $nombre_muestra == "humano" ]
 then
 for muestra in $(ls | grep _sort_dedup.bam | cut -d '_' -f1,2,3,4)
 do
-    igvtools count -z 5 -w 25 -e 250 $muestra*dedup_sorted.bam $muestra"_dedup_sorted.tdf" Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa.gz 
+    igvtools count -z 5 -w 25 -e 250 $muestra"_sort_dedup.bam" $muestra"_dedup_sorted.tdf" Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa
 done
 else
 for muestra in $(ls | grep _sort_dedup.bam | cut -d '_' -f1,2,3,4)
@@ -141,6 +141,4 @@ do
  htseq-count --format=bam --type=exon --idattr=gene_name $muestra*.bam all_peaks_merged.gtf > $muestra"__htseq_counts"
 done
 
-mkdir -p peakome
-mv merge_final peakome/
-rm merge.bed sorted_merge.bed all_peaks_merged.gtf
+
