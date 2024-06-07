@@ -10,12 +10,13 @@ cd fastq
 echo "###########################    Empezando el preprocesamiento de los fastq    ###########################"
    for muestra in $(ls | grep .fq.gz| cut -d '_' -f1,2,3,4| uniq)
        do
-           fastqc $muestra*_1.fq.gz -o fastqc/
-	       fastqc $muestra*_2.fq.gz -o fastqc/
+           fastqc $muestra*_1.fq.gz -o fastqc/ --memory 10000 --threads 20
+	       fastqc $muestra*_2.fq.gz -o fastqc/ --memory 10000 --threads 20
            fastp -i $muestra*_1.fq.gz -o $muestra"_trimmed_dup_1.fq.gz" \
             -I $muestra*_2.fq.gz -O $muestra"_trimmed_dup_2.fq.gz" \
-            --detect_adapter_for_pe --thread  20 
-            #rm $muestra*_1.fq.gz $muestra*_2.fq.gz
+            --detect_adapter_for_pe --thread  16 -h $muestra".html"
+            mv $muestra".html" fastp_reports/
+            mv $muestra*L*_*.fq.gz fq_raw/
        done
 cd ..
 echo "###########################    Preprocesamiento hecho    ###########################"
@@ -54,7 +55,10 @@ then
 for muestra in $(ls | grep .fq.gz | cut -d '_' -f1,2,3,4| uniq )
 do
     echo "###########################    comenzando mapping de $muestra  $(date +'%H:%M:%S')   ###########################"
-    bowtie2 -x human_index -1 $muestra*trimmed_dup_1.fq.gz -2 $muestra*trimmed_dup_2.fq.gz -S $muestra".sam" --very-sensitive -X 500 -p 20
+    bowtie2 -x human_index -1 $muestra*trimmed_dup_1.fq.gz -2 $muestra*trimmed_dup_2.fq.gz -S $muestra".sam" --very-sensitive -X 500 -p 20 > $muestra"bowtie_log.txt"
+    mv $muestra*trimmed_dup_1.fq.gz fastq_trimmed/
+    mv $muestra*trimmed_dup_2.fq.gz fastq_trimmed/
+    mv $muestra"bowtie_log.txt" bowtie_logs/
     echo "###########################    terminando mapping de $muestra  $(date +'%H:%M:%S')   ###########################"
 
     echo "###########################    comenzando creación del .bam .bai de $muestra  $(date +'%H:%M:%S')   ###########################"
@@ -133,12 +137,13 @@ done
 sort -k1,1 -k2,2n merge.bed > sorted_merge.bed
 
 bedtools merge -i sorted_merge.bed > merge_final.bed
+rm merge.bed
 
 awk '{print $1"\tunknown\texon\t"$2"\t"$3"\t.\t+\t0\tgene_id \42"$1":"$2"-"$3"\42;\ttranscript_id \42"$1":"$2"-"$3"\42;\tgene_name \42"$1":"$2"-"$3"\42;"}' merge_final.bed  > all_peaks_merged.gtf
 
 for muestra in $(ls | grep _sort_dedup.bam | cut -d '_' -f1,2,3,4)
 do 
- htseq-count --format=bam --type=exon --idattr=gene_name $muestra*.bam all_peaks_merged.gtf > $muestra"__htseq_counts"
+ htseq-count -n 20 --format=bam --type=exon --idattr=gene_name $muestra*.bam all_peaks_merged.gtf > $muestra"__htseq_counts"
 done
 
 
