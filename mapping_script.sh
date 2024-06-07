@@ -66,7 +66,7 @@ do
     rm  $muestra".sam"
     picard MarkDuplicates I=$muestra"_sort.sam" O=$muestra"_sort_dedup.sam" M=picard_log.txt REMOVE_DUPLICATES=true
     rm $muestra"_sort.sam"
-    samtools view -bh $muestra"_sort_dedup.sam" > $muestra"_sort_dedup.bam"
+    samtools view -bhS $muestra"_sort_dedup.sam" > $muestra"_sort_dedup.bam"
     rm $muestra"_sort_dedup.sam"
     samtools index $muestra"_sort_dedup.bam" $muestra"_sort_dedup.bai"
     echo "###########################     .bam .bai hecho de $muestra  $(date +'%H:%M:%S')  ###########################"

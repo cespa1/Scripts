@@ -2,10 +2,10 @@
 
 ##Working directory as var y creación de directorios si no existen
 echo "############ Starting pipeline at $(date +'%H:%M:%S')... ##############"
-cd /home/vant/ATAC_seq
+
 export WD=$(pwd)
 cd $WD
-mkdir -p out/
+
 
 ##Preprocesamiento de los fastq, (generar achivo fastQC,trimming)
     ##DONE 

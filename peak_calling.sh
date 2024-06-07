@@ -1,38 +1,24 @@
-##Peak calling con MACS2 HUMANO
-#cd /home/vant/ATAC_seq/out
-#for muestra in $(ls | grep _)
-#do
-#if [ -a $muestra/peak_calling/ATAC_peaks.broadPeak ]
-#then
-#  echo  "$muestra peak calling is alredy done going next sample"
-#else
-#   macs2 callpeak -t $muestra/*dedup.bam --outdir $muestra/peak_calling/ \
-#        -f BAM -n ATAC -g hs -q 0.0001 --nomodel --shift -37 --extsize 73 --broad
-#fi
-#done
 
-##PEAKCALLING RATON
-cd /home/vant/ATAC_seq/mouse_ATAC
-for muestra in $(ls | grep _)
+##Peak calling
+cd Bam/
+for muestra in $(ls | grep _sort_dedup.bam | cut -d '_' -f1,2,3,4)
 do
-if [ -a $muestra/peak_calling/ATAC_peaks.broadPeak ]
-then
-  echo  "$muestra peak calling is alredy done going next sample"
-else
-    macs2 callpeak -t $muestra/*dedup.bam --outdir $muestra/peak_calling/ \
-        -f BAM -n ATAC -g mm -q 0.0001 --nomodel --shift -37 --extsize 73 --broad
-fi
+        macs2 callpeak -t $muestra*dedup.bam --outdir ../peak_calling/$muestra"_ATAC_peaks.broadPeak" \
+    -f BAM -n ATAC -g hs -q 0.0001 --nomodel --bw 1000 --shift -37 --extsize 73 --broad
+
+done
+cd ..
+
+##Peakome
+
+touch merge.bed
+for muestra in $(ls | grep _sort_dedup.bam | cut -d '_' -f1,2,3,4)
+do
+cut -f1-4 $muestra"_ATAC_peaks.broadPeak"/ATAC_peaks.broadPeak > $muestra"_ATAC_peaks.broadPeak"/$muestra"_peaks.bed"
+cat $muestra"_ATAC_peaks.broadPeak"/$muestra"_peaks.bed" >> merge.bed
 done
 
-##PEAKCALLING A431 (Humano)  
-#cd /home/vant/ATAC_seq/A431
-#for muestra in $(ls | grep _)
-#do
-#if [ -a $muestra/peak_calling/ATAC_peaks.broadPeak ]
-#then
-#  echo  "$muestra peak calling is alredy done going next sample"
-#else
-#    macs2 callpeak -t $muestra/*dedup.bam --outdir $muestra/peak_calling/ \
-##        -f BAM -n ATAC -g hs -q 0.0001 --nomodel --shift -37 --extsize 73 --broad
-#fi
-#done
+sort -k1,1 -k2,2n merge.bed > sorted_merge.bed
+
+bedtools merge -i sorted_merge.bed > merge_final.bed
+rm merge.bed
