@@ -19,7 +19,7 @@
 cd /home/vant/ATAC_seq
 for muestra in $(ls mouse_ATAC/ | egrep .bam | cut -d "." -f1) 
 do
-    htseq-count --format=bam --type=exon --idattr=gene_name mouse_ATAC/$muestra.bam mouse_ATAC/peak_calling/all_peaks_merged_mouse.gtf  > /home/vant/ATAC_seq/mouse_ATAC/peak_calling/htseq/$muestra"_htseq_counts"
+    htseq-count -n 20 --format=bam --type=exon --idattr=gene_name mouse_ATAC/$muestra.bam mouse_ATAC/peak_calling/all_peaks_merged_mouse.gtf  > /home/vant/ATAC_seq/mouse_ATAC/peak_calling/htseq/$muestra"_htseq_counts"
 done
 
 

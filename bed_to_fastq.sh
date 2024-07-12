@@ -1,0 +1,1 @@
+bedtools getfasta -fi Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa -bed Low_new_deseq.bed

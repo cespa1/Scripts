@@ -22,6 +22,8 @@ caf30<-read.csv("Caf30.csv")
 names<-caf30$X
 caf30<-read.csv("Caf30.csv", row.names = names)
 caf30<-select(caf30,-X)
+caf30.new <-caf30 %>% filter(row.names(caf30) %in% row.names(caf30_stats))
+
 
 nombre<-c("Cc","Cc","Cc","NoCc","NoCc","NoCc")
 a<-colnames(caf30)

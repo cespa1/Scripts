@@ -6,15 +6,15 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 
 
 
-BiocManager::install("DESeq2")
+BiocManager::install("DESeq2",force = TRUE)
 
-BiocManager::install("apeglm")
+BiocManager::install("apeglm",force = TRUE)
 
 BiocManager::install("vsn",force = TRUE)
 
-BiocManager::install("hexbin")
+BiocManager::install("hexbin",force = TRUE)
 
-BiocManager::install("pheatmap")
+BiocManager::install("pheatmap",force = TRUE)
 
 library("apeglm")
 
@@ -25,7 +25,7 @@ library("ggplot2")
 library("vsn")
 
 
-setwd("/home/vant/ATAC_seq/OSCC/peak_calling/htseq/")
+setwd("/home/scclab/Atacseq/Bams/htseq")
 directory = getwd()
 
 
@@ -36,10 +36,10 @@ directory = getwd()
 
 #this methods assumes all htseq files are still separate and not together in a single file
 
-sampleFiles <- data.frame(c("s8_O68_1_EKDL230002753-1A_sort_dedup_htseq_counts","S20_ATAC_O37_1_sort_dedup_htseq_counts","S26_ATAC_O43_NT_sort_dedup_htseq_counts","S27_ATAC_O43_NT_sort_dedup_htseq_counts","S28_ATAC_O43_T_sort_dedup_htseq_counts","S29_ATAC_O43_T_sort_dedup_htseq_counts","s3_O57_EKDL230002748-1A_HWGLWDSX5_sort_dedup_htseq_counts","s4_O64_EKDL230002749-1A_HWGLWDSX5_sort_dedup_htseq_counts","s7_O67_EKDL230002752-1A_HWGLWDSX5_sort_dedup_htseq_counts","s1_O55_1_EKDL230002746-1A_sort_dedup_htseq_counts","s2_O55_2_EKDL230002747-1A_sort_dedup_htseq_counts","S30_ATAC_O41_1_sort_dedup_htseq_counts","S31_ATAC_O41_2_sort_dedup_htseq_counts",
-                            "s4_ATAC_O11_2_sort_dedup_htseq_counts","s5_O66_1_EKDL230002750-1A_sort_dedup_htseq_counts","s6_O66_2_EKDL230002751-1A_sort_dedup_htseq_counts","S1_ATAC_O18_1_sort_dedup_htseq_counts","S2_ATAC_O18_2_sort_dedup_htseq_counts","S5_ATAC_O22_1_sort_dedup_htseq_counts","S6_ATAC_O22_2_sort_dedup_htseq_counts","S11_ATAC_O27_1_sort_dedup_htseq_counts","S12_ATAC_O27_2_sort_dedup_htseq_counts","S7_ATAC_O24_1_sort_dedup_htseq_counts","S8_ATAC_O24_2_sort_dedup_htseq_counts","S19_ATAC_O35_1_sort_dedup_htseq_counts","s8_ATAC_O14_2_sort_dedup_htseq_counts","s9_ATAC_O14_3_sort_dedup_htseq_counts"))
+sampleFiles <- data.frame(c("s8_O68_1_EKDL230002753-1A__htseq_counts","S28_ATAC_O43_T__htseq_counts","S29_ATAC_O43_T__htseq_counts","s3_O57_EKDL230002748-1A_HWGLWDSX5__htseq_counts","s4_O64_EKDL230002749-1A_HWGLWDSX5__htseq_counts","s7_O67_EKDL230002752-1A_HWGLWDSX5__htseq_counts","s1_O55_1_EKDL230002746-1A__htseq_counts","s2_O55_2_EKDL230002747-1A__htseq_counts","S30_ATAC_O41_1__htseq_counts","S31_ATAC_O41_2__htseq_counts",
+                            "s4_ATAC_O11_2__htseq_counts","s5_O66_1_EKDL230002750-1A__htseq_counts","s6_O66_2_EKDL230002751-1A__htseq_counts","S1_ATAC_O18_1__htseq_counts","S2_ATAC_O18_2__htseq_counts","S5_ATAC_O22_1__htseq_counts","S6_ATAC_O22_2__htseq_counts","S11_ATAC_O27_1__htseq_counts","S12_ATAC_O27_2__htseq_counts","S19_ATAC_O35_1__htseq_counts","s8_ATAC_O14_2__htseq_counts","s9_ATAC_O14_3__htseq_counts"))
 
-colData <- data.frame(condition=factor(c("H","H","H","H","H","H","H","H","H","H","H","H","H","L","L","L","L","L","L","L","L","L","L","L","L","L","L")))
+colData <- data.frame(condition=factor(c("H","H","H","H","H","H","H","H","H","H","L","L","L","L","L","L","L","L","L","L","L","L")))
 
 
 ##specifies what condition the files are
@@ -204,7 +204,8 @@ meanSdPlot(assay(rld))
 #look at how transformations affect mean SD's
 
 
-
+plotPCA(rld, intgroup=c("condition"))
+identify(plotPCA(vsd, intgroup=c("condition")))
 
 
 library("pheatmap")
@@ -248,4 +249,34 @@ my_results_threshold <- results(object = dds,
 )
 mat <- assay(vsd)[head(order(my_results_threshold$padj), 10), ] 
 pheatmap(mat,cluster_rows=FALSE,cluster_cols=FALSE, annotation_col=df)
+
+
+BiocManager::install('EnhancedVolcano')
+library(EnhancedVolcano)
+library(magrittr)
+
+EnhancedVolcano(resSig_padj005,
+                lab = rownames(resSig_padj005),
+                x = 'log2FoldChange',
+                y = 'pvalue')
+
+EnhancedVolcano(resSig_padj005,
+                lab = rownames(resSig_padj005),
+                x = 'log2FoldChange',
+                y = 'pvalue',
+                title = 'High versus Low',
+                pCutoff = 5e-2,
+                FCcutoff = 0.5,
+                pointSize = 0.5,
+                labSize = 3.0)
+
+EnhancedVolcano(resSig_padj005,
+                lab = rownames(resSig_padj005),
+                x = 'log2FoldChange',
+                y = 'pvalue',
+                title = 'High versus Low',
+                pCutoff = 5e-3,
+                FCcutoff = 1,
+                pointSize = 0.5,
+                labSize = 3.0)
 

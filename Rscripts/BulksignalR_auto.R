@@ -1,5 +1,6 @@
 BiocManager::install("ggtree")
-BiocManager::install("orthogene")
+install.packages("devtools")
+BiocManager::install("orthogene", force = TRUE)
 devtools::install_github("jcolinge/BulkSignalR")
 install.packages("igraph")
 install.packages("ragg")
@@ -14,7 +15,7 @@ caf30_stats<-read.csv("Caf30_DEG_padj005.csv", header = TRUE, sep = ",")
 names<-caf30_stats$X
 caf30_stats<-read.csv("Caf30_DEG_padj005.csv", header = TRUE, row.names = names, sep = ",")
 caf30_stats<-select(caf30_stats,-X)
-caf30_stats<-data.frame(pval=caf30_stats$pvalue,logFC=caf30_stats$log2FoldChange)
+caf30_stats<-data.frame(pval=caf30_stats$pvalue,logFC=caf30_stats$log2FoldChange, expr=caf30_stats$baseMean)
 row.names(caf30_stats)<-names
 
 ##Cargar los counts de los genes del RNAseq

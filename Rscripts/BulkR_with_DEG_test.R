@@ -1,32 +1,22 @@
-data(sdc,package='BulkSignalR')
-normal <- grep("^N", names(sdc))
-bsrdm <- prepareDataset(sdc[,-normal])
+caf30_stats.new <-caf30_stats %>% filter(row.names(caf30_stats) %in% test)
+##Preparar el data set de counts 
+bsrdm <- prepareDataset(caf30.new)
 
 # define the comparison
 
 bsrdm.comp <- as.BSRDataModelComp(bsrdm)
-colA <- as.integer(1:5)
-colB <- as.integer(8:15)
-
-# As an example here, we generate random values 
-# but user should provide his own logFC and
-# associated pvalues from DGE ouputs. 
-
-n <- nrow(ncounts(bsrdm.comp))
-stats <- data.frame(pval=runif(n), logFC=rnorm(n, 0, 2),
-                    expr=runif(n, 0, 10))
-rownames(stats) <- rownames(ncounts(bsrdm.comp))
-
+colA <- as.integer(1:3)
+colB <- as.integer(4:6)
 
 # we first define the cluster comparison and add it
 # to the BSRDataModelComp object.
 
-bsrcc <- defineClusterComp(bsrdm.comp, colA, colB, stats)
+bsrcc <- defineClusterComp(bsrdm.comp, colA, colB, caf30_stats.new)
 bsrdm.comp <- addClusterComp(bsrdm.comp, bsrcc, "random.example")
 
 # finally we infer ligand-receptor interactions from the comparison
 
-bsrinf.comp <- initialInference(bsrdm.comp, max.pval=1,"random.example")
+bsrinf <- initialInference(bsrdm.comp, max.pval=1,"random.example")
 
 bsrinf.redP <- reduceToPathway(bsrinf.comp)
 bsrinf.redBP    <- reduceToBestPathway(bsrinf.comp)
