@@ -49,7 +49,7 @@ cd ../Bams/
 
 computeMatrix reference-point --referencePoint center -p 23 -S O9_1.bw O9_2.bw O31_1.bw O31_2.bw O32_1.bw O15.bw -R ../../high_DEG ../../Low_DEG  -b 3000 -a 3000 -bs=1 -p=max --outFileName test2.matrix.gz
 
-plotHeatmap -m test2.matrix.gz --outFileName reclass2.plot.pdf --yMax 40 --colorMap=Blues
+plotHeatmap -m chip.matrix.gz --outFileName p63_chip.plot.pdf --yMax 40 --colorMap=Blues
 
 computeMatrix reference-point --referencePoint center -p 23 -S O24_1.bw O24_2.bw O35_1.bw O14_2.bw O14_3.bw O14_1.bw -R ../../high_DEG ../../Low_DEG -b 3000 -a 3000 -bs=1 -p=max --outFileName low_no_rna_test.matrix.gz
 
@@ -67,4 +67,12 @@ computeMatrix reference-point --referencePoint center -p 20 -S ORG_11.bw ORG_18.
 
 plotHeatmap -m organoides.matrix.gz --outFileName organoides.plot.pdf --yMax 40 --colorMap=Blues
 
-computeMatrix reference-point --referencePoint center -p 20 -S O68_1.bw -R ../../high_DEG ../../Low_DEG -b 3000 -a 3000 -bs=1 -p=max --outFileName high.matrix.gzs
+computeMatrix reference-point --referencePoint center -p 20 -S O68_1.bw -R ../../high_DEG ../../Low_DEG -b 3000 -a 3000 -bs=1 -p=max --outFileName high.matrix.gz
+
+computeMatrix reference-point --referencePoint center -p 23 -S O11_1.bw O11_2.bw O18_1.bw O18_2.bw O22_1.bw O22_2.bw O27_1.bw O27_2.bw -R ../../high_DEG ../../Low_DEG -b 3000 -a 3000 -bs=1 -p=max --outFileName faltantes.matrix.gz
+
+plotHeatmap -m faltantes.matrix.gz --outFileName faltantes.plot.pdf --yMax 40 --colorMap=Blues
+
+computeMatrix reference-point --referencePoint center -p 23 -S O37_1.bw O37_2.bw O43_1_T.bw O43_2_T.bw O43_1_NT.bw O43_2_NT.bw -R ../../high_DEG ../../Low_DEG -b 3000 -a 3000 -bs=1 -p=max --outFileName faltantes2.matrix.gz
+
+plotHeatmap -m faltantes2.matrix.gz --outFileName faltantes2_morado3.plot.pdf --yMax 40 --colorMap=PuRd --whatToShow "heatmap only" 

@@ -51,3 +51,5 @@ do
     TOBIAS PlotAggregate --TFBS /home/scclab/Atacseq/Bams/htseq/Resultados/beds/$motif"_low.bed" --signals /home/scclab/Atacseq/Bams/htseq/Resultados/footprinting/$bam/$motif"_low/"$bam*"_merged_corrected.bw" /home/scclab/Atacseq/Bams/htseq/Resultados/footprinting/$bam/$motif"_low"/$bam*"_footprints_"$motif"_low.bw" --output /home/scclab/Atacseq/Bams/htseq/Resultados/footprinting/$bam/$motif"_low"/footprint_250.pdf --share_y both --plot_boundaries --signal-on-x --flank 250
 
 done
+
+
